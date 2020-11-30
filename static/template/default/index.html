@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title></title>
+  <link rel="stylesheet" href="@./style.css">
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <input type="text" id="search">
+    </header>
+    <div class="content" style="font-size: 16px;">
+      {{ content }}
+    </div>
+  </div>
+  <script>
+    const vscode = acquireVsCodeApi();
+    const nodeSearch = document.querySelector('#search')
+
+    function recieveMessage ({ command, data }) {
+      console.log(data)
+    }
+
+    function onHanlderSearch (e) {
+      if (e.key !== 'Enter') return
+
+      vscode.postMessage({
+        command: 'searchBooks',
+        data: e.target.value
+      });
+    }
+
+    function main () {
+      nodeSearch.addEventListener('keydown', onHanlderSearch);
+      window.addEventListener('message', recieveMessage);
+    }
+
+    main();
+  </script>
+</body>
+
+</html>
