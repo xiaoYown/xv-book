@@ -17,9 +17,27 @@
 		"commands": [
 			{
 				"command": "xv-book.xvLook",
-				"title": "xv look"
+				"title": "xv look",
+				"category": "xv-book"
 			}
-		]
+		],
+		"viewsContainers": {
+      "activitybar": [
+        {
+          "id": "treeView",
+          "title": "小说",
+          "icon": "static/images/icon.svg"
+        }
+      ]
+		},
+		"views": {
+      "treeView": [
+        {
+          "id": "root",
+          "name": "七猫阅读"
+        }
+      ]
+    }
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",

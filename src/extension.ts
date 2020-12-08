@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import * as Path from 'path';
 import { store } from './utils/store';
 import { openIndex } from './views/main';
+import { treeDataProvider } from './explorer/treeDataProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -25,7 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
     openIndex(context);
   });
 
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    disposable,
+    treeDataProvider
+  );
 }
 
 // this method is called when your extension is deactivated
