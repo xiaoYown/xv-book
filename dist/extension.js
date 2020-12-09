@@ -99,7 +99,7 @@ const vscode = __webpack_require__(1);
 const Path = __webpack_require__(2);
 const store_1 = __webpack_require__(3);
 const main_1 = __webpack_require__(4);
-const treeDataProvider_1 = __webpack_require__(385);
+// import { treeDataProvider } from './explorer/treeDataProvider';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
@@ -117,7 +117,7 @@ function activate(context) {
         vscode.window.showInformationMessage("Hello World from xv-book!");
         main_1.openIndex(context);
     });
-    context.subscriptions.push(disposable, treeDataProvider_1.treeDataProvider);
+    context.subscriptions.push(disposable);
 }
 exports.activate = activate;
 // this method is called when your extension is deactivated
@@ -31113,123 +31113,6 @@ module.exports = baseMap;
 /***/ (function(module) {
 
 module.exports = JSON.parse("{\"_args\":[[\"cheerio@1.0.0-rc.3\",\"/Volumes/dev/self/Vscode/xv-book\"]],\"_from\":\"cheerio@1.0.0-rc.3\",\"_id\":\"cheerio@1.0.0-rc.3\",\"_inBundle\":false,\"_integrity\":\"sha1-CUY21CWy6cD065GkbAVjDJoai/Y=\",\"_location\":\"/cheerio\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"cheerio@1.0.0-rc.3\",\"name\":\"cheerio\",\"escapedName\":\"cheerio\",\"rawSpec\":\"1.0.0-rc.3\",\"saveSpec\":null,\"fetchSpec\":\"1.0.0-rc.3\"},\"_requiredBy\":[\"/\"],\"_resolved\":\"https://registry.npm.taobao.org/cheerio/download/cheerio-1.0.0-rc.3.tgz\",\"_spec\":\"1.0.0-rc.3\",\"_where\":\"/Volumes/dev/self/Vscode/xv-book\",\"author\":{\"name\":\"Matt Mueller\",\"email\":\"mattmuelle@gmail.com\",\"url\":\"mat.io\"},\"bugs\":{\"url\":\"https://github.com/cheeriojs/cheerio/issues\"},\"dependencies\":{\"css-select\":\"~1.2.0\",\"dom-serializer\":\"~0.1.1\",\"entities\":\"~1.1.1\",\"htmlparser2\":\"^3.9.1\",\"lodash\":\"^4.15.0\",\"parse5\":\"^3.0.1\"},\"description\":\"Tiny, fast, and elegant implementation of core jQuery designed specifically for the server\",\"devDependencies\":{\"benchmark\":\"^2.1.0\",\"coveralls\":\"^2.11.9\",\"expect.js\":\"~0.3.1\",\"istanbul\":\"^0.4.3\",\"jquery\":\"^3.0.0\",\"jsdom\":\"^9.2.1\",\"jshint\":\"^2.9.2\",\"mocha\":\"^3.1.2\",\"xyz\":\"~1.1.0\"},\"engines\":{\"node\":\">= 0.6\"},\"files\":[\"index.js\",\"lib\"],\"homepage\":\"https://github.com/cheeriojs/cheerio#readme\",\"keywords\":[\"htmlparser\",\"jquery\",\"selector\",\"scraper\",\"parser\",\"html\"],\"license\":\"MIT\",\"main\":\"./index.js\",\"name\":\"cheerio\",\"repository\":{\"type\":\"git\",\"url\":\"git://github.com/cheeriojs/cheerio.git\"},\"scripts\":{\"test\":\"make test\"},\"version\":\"1.0.0-rc.3\"}");
-
-/***/ }),
-/* 385 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.treeDataProvider = void 0;
-const vscode = __webpack_require__(1);
-const explorerNodeManager_1 = __webpack_require__(386);
-class TreeDataProvider {
-    constructor() {
-        // private context: vscode.ExtensionContext;
-        this.onDidChangeTreeDataEvent = new vscode.EventEmitter();
-        this.onDidChangeTreeData = this.onDidChangeTreeDataEvent.event;
-    }
-    initialize() {
-        // ...
-    }
-    dispose() {
-        this.fire();
-    }
-    fire() {
-        // this.onDidChangeTreeDataEvent.fire();
-    }
-    getTreeItem(element) {
-        // 这里要返回最终显示的
-        return {
-            label: element.name,
-            tooltip: element.name,
-            iconPath: '',
-            collapsibleState: element.isDirectory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
-        };
-    }
-    getChildren(element) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!element) {
-                return explorerNodeManager_1.explorerNodeManager.getChildren();
-            }
-            return yield explorerNodeManager_1.explorerNodeManager.getChapter(element);
-        });
-    }
-}
-exports.treeDataProvider = new TreeDataProvider();
-
-
-/***/ }),
-/* 386 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.explorerNodeManager = void 0;
-const reader_1 = __webpack_require__(387);
-class ExplorerNodeManager {
-    constructor() {
-        this.treeNode = [];
-    }
-    getChildren() {
-        return this.treeNode;
-    }
-    // public getAllBooks(): Promise<TreeNode[]> {
-    //   return new Promise((resolve) => {
-    //     readerDriver.getAllBooks().then((treeNode: TreeNode[]) => {
-    //       this.treeNode = treeNode;
-    //       resolve(this.treeNode);
-    //     });
-    //   });
-    // }
-    setTreeNode(treeNode) {
-        this.treeNode = treeNode;
-    }
-    // 获取
-    getChapter(treeNode) {
-        return reader_1.readerDriver.getChapter(treeNode);
-    }
-    dispose() {
-        this.treeNode = [];
-    }
-}
-exports.explorerNodeManager = new ExplorerNodeManager();
-
-
-/***/ }),
-/* 387 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.readerDriver = void 0;
-class ReaderDriver {
-    getChapter(treeNode) {
-        return new Promise(function (resolve) {
-            // import('./driver/' + treeNode.type.substr(1))
-            //   .then(({ readerDriver }) => {
-            //     resolve(readerDriver.getChapter(treeNode.path));
-            //   })
-            //   .catch(() => {
-            //     resolve([]);
-            //   });
-        });
-    }
-}
-exports.readerDriver = new ReaderDriver();
-
 
 /***/ })
 /******/ ]);
