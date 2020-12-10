@@ -19,7 +19,24 @@
 				"command": "e-test.helloWorld",
 				"title": "Hello World"
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "treeView",
+					"title": "tree view",
+					"icon": "media/dep.svg"
+				}
+			]
+		},
+		"views": {
+      "treeView": [
+        {
+          "id": "local",
+          "name": "目录"
+        }
+      ]
+    }
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
