@@ -4,7 +4,8 @@ import * as vscode from "vscode";
 import * as Path from 'path';
 import { store } from './utils/store';
 import { openIndex } from './views/main';
-// import { treeDataProvider } from './explorer/treeDataProvider';
+import { treeViewProvider } from './explorer/treeViewProvider';
+import { searchOnline } from './commands'
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -25,10 +26,16 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage("Hello World from xv-book!");
     openIndex(context);
   });
+  let search = vscode.commands.registerCommand("xv-book.command.search", searchOnline);
 
   context.subscriptions.push(
     disposable,
+    search,
     // treeDataProvider
+    vscode.window.createTreeView('root', {
+      treeDataProvider: treeViewProvider,
+      showCollapseAll: true
+    })
   );
 }
 

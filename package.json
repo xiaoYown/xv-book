@@ -10,7 +10,9 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:xv-book.xvLook"
+		"onCommand:xv-book.xvLook",
+		"onCommand:xv-book.command.search",
+		"onView:root"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -19,25 +21,30 @@
 				"command": "xv-book.xvLook",
 				"title": "xv look",
 				"category": "xv-book"
+			},
+			{
+				"command": "xv-book.command.search",
+				"title": "xv search",
+				"category": "xv-book"
 			}
 		],
 		"viewsContainers": {
-      "activitybar": [
-        {
-          "id": "treeView",
-          "title": "小说",
-          "icon": "static/images/icon.svg"
-        }
-      ]
+			"activitybar": [
+				{
+					"id": "treeView",
+					"title": "qimao",
+					"icon": "static/images/icon.svg"
+				}
+			]
 		},
 		"views": {
-      "treeView": [
-        {
-          "id": "root",
-          "name": "七猫阅读"
-        }
-      ]
-    }
+			"treeView": [
+				{
+					"id": "root",
+					"name": "七猫阅读"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
@@ -71,6 +78,7 @@
 	"dependencies": {
 		"cheerio": "^1.0.0-rc.3",
 		"got": "^9.6.0",
-		"open": "^7.3.0"
+		"open": "^7.3.0",
+		"util": "^0.12.3"
 	}
 }

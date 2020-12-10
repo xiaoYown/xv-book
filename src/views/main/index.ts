@@ -3,7 +3,7 @@ import { template } from "../../utils";
 import { TemplatePath } from '../../config';
 import { store } from '../../utils/store';
 
-import { readerDriver } from '../../services/qimao';
+import { readerDriver } from '../../reader/qimao';
 
 interface Message {
   command: string
@@ -16,19 +16,20 @@ function receiveMessage (panel:vscode.WebviewPanel) {
     const { command, data } = message;
     switch (command) {
       case 'searchBooks':
-        readerDriver.search(data).then((res: any) => {
-          // console.log(res.body);
-          // panel.webview.postMessage({
-          //   command: 'searchSuccess',
-          //   data: res
-          // });
-        }).catch((err: any) => {
-          console.log(err);
-          panel.webview.postMessage({
-            command: 'searchFail',
-            data: err
-          });
-        });
+        readerDriver.search(data)
+        // readerDriver.search(data).then((res: any) => {
+        //   // console.log(res.body);
+        //   // panel.webview.postMessage({
+        //   //   command: 'searchSuccess',
+        //   //   data: res
+        //   // });
+        // }).catch((err: any) => {
+        //   console.log(err);
+        //   panel.webview.postMessage({
+        //     command: 'searchFail',
+        //     data: err
+        //   });
+        // });
         break;
       default:
         panel.webview.postMessage({ commond: 'eventError', data: 'not exit this command ' + command });
