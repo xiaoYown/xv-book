@@ -32,7 +32,7 @@
 		"views": {
       "treeView": [
         {
-          "id": "local",
+          "id": "online",
           "name": "目录"
         }
       ]

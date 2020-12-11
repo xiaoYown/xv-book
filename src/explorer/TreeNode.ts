@@ -1,5 +1,5 @@
-// import { Command } from 'vscode';
-// import { Commands } from '../config';
+import { Command } from 'vscode';
+import { Commands } from '../config';
 import { IReader } from '../@types';
 
 export const defaultProblem: IReader = {
@@ -24,11 +24,11 @@ export class TreeNode {
   public get isDirectory(): boolean {
     return this.data.isDirectory;
   }
-  // public get previewCommand(): Command {
-  //   return {
-  //     title: this.data.name,
-  //     command: Commands.openReaderWebView,
-  //     arguments: [this]
-  //   };
-  // }
+  public get previewCommand(): Command {
+    return {
+      title: this.data.name,
+      command: Commands.openReaderWebView,
+      arguments: [this]
+    };
+  }
 }
