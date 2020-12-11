@@ -116,14 +116,11 @@ function activate(context) {
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
     context.subscriptions.push(vscode.commands.registerCommand(config_1.Commands.setCookie, commands_1.setCookie), vscode.commands.registerCommand(config_1.Commands.searchOnline, commands_1.searchOnline), vscode.commands.registerCommand(config_1.Commands.openChapterWebView, (treeNode) => {
-        console.log(treeNode.name);
         if (!webView) {
             webView = ChapterView_1.createWebView(context, vscode.ViewColumn.Active, treeNode);
             context.subscriptions.push(webView.webviewPanel);
         }
-        else {
-            webView.updateChapter(treeNode);
-        }
+        webView.updateChapter(treeNode);
     }));
 }
 exports.activate = activate;
@@ -280,8 +277,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.readerDriver = void 0;
 const got = __webpack_require__(7);
 const TreeNode_1 = __webpack_require__(64);
-const parser_1 = __webpack_require__(67);
 const utils_1 = __webpack_require__(386);
+const parser_1 = __webpack_require__(67);
+const notification_1 = __webpack_require__(384);
 const DOMAIN = "https://www.qimao.com";
 // const DOMAIN = 'https://m.qidian.com';
 class ReaderDriver {
@@ -326,7 +324,6 @@ class ReaderDriver {
                 }
             }).then((res) => {
                 const chapterList = parser_1.parseBookIndex(res.body);
-                console.log(chapterList);
                 const result = chapterList.map((item) => {
                     return new TreeNode_1.TreeNode({
                         type: '.qimao',
@@ -339,6 +336,26 @@ class ReaderDriver {
             }).catch((reason) => {
                 console.log(reason);
                 reject(reason);
+            });
+        });
+    }
+    // 获取章节内容
+    getChapterContent(treeNode) {
+        const notification = new notification_1.Notification(`正在加载: ${treeNode.name}`);
+        return new Promise(function (resolve, reject) {
+            // got(DOMAIN + "/search/index/?keyword=" + encodeURI(keyword))
+            const url = `${DOMAIN}${treeNode.path}`;
+            got(url, {
+                headers: {
+                    Cookie: utils_1.getCookie()
+                }
+            }).then((res) => {
+                const chapterContent = parser_1.parseChapterContent(res.body);
+                resolve(chapterContent);
+                notification.stop();
+            }).catch((reason) => {
+                reject(reason);
+                notification.stop();
             });
         });
     }
@@ -4784,7 +4801,7 @@ var Commands;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseBookIndex = exports.parseSearchBooks = void 0;
+exports.parseChapterContent = exports.parseBookIndex = exports.parseSearchBooks = void 0;
 const vscode_1 = __webpack_require__(1);
 const cheerio = __webpack_require__(68);
 const index_1 = __webpack_require__(386);
@@ -4825,6 +4842,15 @@ const parseBookIndex = (html) => {
     return result;
 };
 exports.parseBookIndex = parseBookIndex;
+/* 解析章节内容 */
+const parseChapterContent = (html) => {
+    const $ = cheerio.load(html);
+    const title = $('.chapter-info .title').text();
+    const content = $('.article.js-article').text();
+    const result = { title, content };
+    return result;
+};
+exports.parseChapterContent = parseChapterContent;
 
 
 /***/ }),
@@ -31108,6 +31134,7 @@ exports.Notification = Notification;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIframeHtml = exports.createWebView = exports.ChapterView = void 0;
 const vscode_1 = __webpack_require__(1);
+const qimao_1 = __webpack_require__(6);
 // 创建一个全局变量，类型为：WebviewPanel 或者 undefined
 let webviewPanel;
 class ChapterView {
@@ -31123,18 +31150,18 @@ class ChapterView {
             retainContextWhenHidden: true,
             enableScripts: true,
         });
-        // 面板嵌入 html getIframeHtml() 方法在下面
-        webviewPanel.webview.html = getIframeHtml(chapter.name);
         // onDidDispose: 如果关闭该面板，将 webviewPanel 置 undefined
         webviewPanel.onDidDispose(() => {
             webviewPanel = undefined;
         });
         this.webviewPanel = webviewPanel;
     }
-    updateChapter(chapter) {
-        this.webviewPanel.title = chapter.name;
-        this.webviewPanel.webview.html = getIframeHtml(chapter.name);
-        this.webviewPanel.reveal(); // Webview面板一次只能显示在一列中。如果它已经显示，则此方法将其移动到新列。
+    updateChapter(treeNode) {
+        this.webviewPanel.title = treeNode.name;
+        qimao_1.readerDriver.getChapterContent(treeNode).then((chapterContent) => {
+            this.webviewPanel.webview.html = getIframeHtml(chapterContent);
+            this.webviewPanel.reveal(); // Webview面板一次只能显示在一列中。如果它已经显示，则此方法将其移动到新列。
+        });
     }
 }
 exports.ChapterView = ChapterView;
@@ -31147,32 +31174,39 @@ chapter // 传递进来的一个 label 值，就是点击树视图项 showInform
 }
 exports.createWebView = createWebView;
 // 这个方法没什么了，就是一个 最简单的嵌入 iframe 的 html 页面
-function getIframeHtml(label) {
+function getIframeHtml(chapterContent) {
     return `
-    <!DOCTYPE html>
-    <html lang="en">
-        <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>
-            html,
-            body {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100%;
-                height: 100%;
-            }
-            .iframeDiv {
-                width: 100%;
-                height: 100%;
-            }
-        </style>
-        </head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    html,
+    body {
+      margin: 0 !important;
+      padding: 30px !important;
+    }
+    section {
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 30px;
+    }
+  </style>
+  </head>
 
-        <body>
-          ${label}
-        </body>
-    </html>
+  <body>
+    <section>
+      <h3>${chapterContent.title}</h3>
+      <br>
+      <div>${chapterContent.content}<div>
+    </section>
+  </body>
+</html>
     `;
 }
 exports.getIframeHtml = getIframeHtml;

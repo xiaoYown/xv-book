@@ -6,6 +6,15 @@ import {
   commands,
 } from "vscode";
 import { TreeNode } from '../explorer/TreeNode';
+import { readerDriver } from '../reader/qimao';
+import {
+  BookItem,
+  ChapterItem,
+  ChapterContent,
+  parseSearchBooks,
+  parseBookIndex,
+  parseChapterContent
+} from '../utils/parser';
 // 创建一个全局变量，类型为：WebviewPanel 或者 undefined
 let webviewPanel: WebviewPanel | undefined;
 
@@ -26,9 +35,6 @@ export class ChapterView {
       }
     );
 
-    // 面板嵌入 html getIframeHtml() 方法在下面
-    webviewPanel.webview.html = getIframeHtml(chapter.name);
-  
     // onDidDispose: 如果关闭该面板，将 webviewPanel 置 undefined
     webviewPanel.onDidDispose(() => {
       webviewPanel = undefined;
@@ -36,10 +42,12 @@ export class ChapterView {
     this.webviewPanel = webviewPanel
   }
   public webviewPanel: WebviewPanel
-  public updateChapter(chapter: TreeNode) {
-    this.webviewPanel.title = chapter.name;
-    this.webviewPanel.webview.html = getIframeHtml(chapter.name);
-    this.webviewPanel.reveal(); // Webview面板一次只能显示在一列中。如果它已经显示，则此方法将其移动到新列。
+  public updateChapter(treeNode: TreeNode) {
+    this.webviewPanel.title = treeNode.name;
+    readerDriver.getChapterContent(treeNode).then((chapterContent: ChapterContent) => {
+      this.webviewPanel.webview.html = getIframeHtml(chapterContent);
+      this.webviewPanel.reveal(); // Webview面板一次只能显示在一列中。如果它已经显示，则此方法将其移动到新列。
+    });
   }
 }
 
@@ -53,31 +61,38 @@ export function createWebView(
 }
 
 // 这个方法没什么了，就是一个 最简单的嵌入 iframe 的 html 页面
-export function getIframeHtml(label: string) {
+export function getIframeHtml(chapterContent: ChapterContent) {
   return `
-    <!DOCTYPE html>
-    <html lang="en">
-        <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>
-            html,
-            body {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100%;
-                height: 100%;
-            }
-            .iframeDiv {
-                width: 100%;
-                height: 100%;
-            }
-        </style>
-        </head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    html,
+    body {
+      margin: 0 !important;
+      padding: 30px !important;
+    }
+    section {
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 30px;
+    }
+  </style>
+  </head>
 
-        <body>
-          ${label}
-        </body>
-    </html>
+  <body>
+    <section>
+      <h3>${chapterContent.title}</h3>
+      <br>
+      <div>${chapterContent.content}<div>
+    </section>
+  </body>
+</html>
     `;
 }

@@ -7,10 +7,13 @@ export type BookItem = {
   author: string
   path: string
 }
-
 export type ChapterItem = {
   name: string
   path: string
+}
+export type ChapterContent = {
+  title: string
+  content: string
 }
 
 interface HtmlSearchBooks {
@@ -59,4 +62,13 @@ export const parseBookIndex: HtmlBookIndex = (html: string) => {
     })
   })
   return result
+}
+/* 解析章节内容 */
+export const parseChapterContent = (html: string) => {
+  const $ = cheerio.load(html);
+  const title = $('.chapter-info .title').text();
+  const content = $('.article.js-article').text();
+  const result: ChapterContent = { title, content };
+ 
+  return result;
 }

@@ -29,13 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(Commands.setCookie, setCookie),
     vscode.commands.registerCommand(Commands.searchOnline, searchOnline),
     vscode.commands.registerCommand(Commands.openChapterWebView, (treeNode: TreeNode) => {
-			console.log(treeNode.name)
 			if (!webView) {
 				webView = createWebView(context, vscode.ViewColumn.Active, treeNode);
 				context.subscriptions.push(webView.webviewPanel);
-			} else {
-				webView.updateChapter(treeNode);
 			}
+      webView.updateChapter(treeNode);
 		})
   );
 }
