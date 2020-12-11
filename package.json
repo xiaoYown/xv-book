@@ -11,7 +11,8 @@
 	],
 	"activationEvents": [
 		"onCommand:xv-book.xvLook",
-		"onCommand:xv-book.command.search",
+		"onCommand:xv-book.command.searchOnline",
+		"onCommand:xv-book.command.setCookie",
 		"onView:root"
 	],
 	"main": "./dist/extension.js",
@@ -23,8 +24,13 @@
 				"category": "xv-book"
 			},
 			{
-				"command": "xv-book.command.search",
-				"title": "xv search",
+				"command": "xv-book.command.searchOnline",
+				"title": "xv search books",
+				"category": "xv-book"
+			},
+			{
+				"command": "xv-book.command.setCookie",
+				"title": "xv set cookie",
 				"category": "xv-book"
 			}
 		],
@@ -40,7 +46,7 @@
 		"views": {
 			"treeView": [
 				{
-					"id": "root",
+					"id": "online",
 					"name": "七猫阅读"
 				}
 			]

@@ -1,6 +1,7 @@
 class Store {
-  public booksPath = '';
   public extensionPath = '';
+  public booksPath = '';
+  public cookie = '';
 }
 
 const store = new Store();

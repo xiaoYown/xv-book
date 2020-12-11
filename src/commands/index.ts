@@ -3,6 +3,7 @@ import { readerDriver } from '../reader/qimao';
 import { explorerNodeManager } from '../explorer/explorerNodeManager';
 import { treeViewProvider } from '../explorer/treeViewProvider';
 import { Notification } from '../utils/notification';
+import { saveCookie } from '../utils';
 
 const _searchOnline = async function (msg: string) {
   const notification = new Notification(`搜索: ${msg}`);
@@ -10,8 +11,8 @@ const _searchOnline = async function (msg: string) {
     // const vConfig = workspace.getConfiguration('z-reader');
     // const onlineSite: string = vConfig.get('onlineSite', '起点');
     const treeNode = await readerDriver.search(msg);
-    explorerNodeManager.setTreeNode(treeNode);
     treeViewProvider.fire();
+    explorerNodeManager.setTreeNode(treeNode);
   } catch (error) {
     console.warn(error);
   }
@@ -33,3 +34,15 @@ export const searchOnline = async function () {
     console.warn(error);
   }
 };
+
+export const setCookie = async function () {
+  const msg = await window.showInputBox({
+    password: false,
+    ignoreFocusOut: false,
+    placeHolder: '请输入 cookie',
+    prompt: ''
+  });
+  if (msg) {
+    saveCookie(msg);
+  }
+}

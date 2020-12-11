@@ -1,6 +1,7 @@
-import * as path from 'path';
+export const TREEVIEW_ID = 'online';
 
-export const TemplatePath = {
-  templateCss: path.join('static', 'template', 'default', 'style.css'),
-  templateHtml: path.join('static', 'template', 'default', 'index.html')
-};
+export enum Commands {
+  searchOnline = 'xv-book.command.searchOnline',
+  setCookie = 'xv-book.command.setCookie',
+  openChapterWebView = 'xv-book.online.openChapterWebView'
+}

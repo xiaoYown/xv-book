@@ -3,9 +3,13 @@
 import * as vscode from "vscode";
 import * as Path from 'path';
 import { store } from './utils/store';
-import { openIndex } from './views/main';
 import { treeViewProvider } from './explorer/treeViewProvider';
-import { searchOnline } from './commands'
+import { searchOnline, setCookie } from './commands';
+import { Commands } from './config';
+import { TreeNode } from './explorer/TreeNode';
+import { createWebView, ChapterView } from './webview/ChapterView';
+
+let webView: ChapterView | undefined;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,26 +20,23 @@ export function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "xv-book" is now active!');
 
+  treeViewProvider.initTreeView();
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand("xv-book.xvLook", () => {
-    // The code you place here will be executed every time your command is executed
-
-    // Display a message box to the user
-    vscode.window.showInformationMessage("Hello World from xv-book!");
-    openIndex(context);
-  });
-  let search = vscode.commands.registerCommand("xv-book.command.search", searchOnline);
 
   context.subscriptions.push(
-    disposable,
-    search,
-    // treeDataProvider
-    vscode.window.createTreeView('root', {
-      treeDataProvider: treeViewProvider,
-      showCollapseAll: true
-    })
+    vscode.commands.registerCommand(Commands.setCookie, setCookie),
+    vscode.commands.registerCommand(Commands.searchOnline, searchOnline),
+    vscode.commands.registerCommand(Commands.openChapterWebView, (treeNode: TreeNode) => {
+			console.log(treeNode.name)
+			if (!webView) {
+				webView = createWebView(context, vscode.ViewColumn.Active, treeNode);
+				context.subscriptions.push(webView.webviewPanel);
+			} else {
+				webView.updateChapter(treeNode);
+			}
+		})
   );
 }
 

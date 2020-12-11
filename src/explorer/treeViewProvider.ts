@@ -6,19 +6,23 @@ import {
   window,
   Event,
   EventEmitter,
+  
 } from "vscode";
 import { TreeNode } from "./TreeNode";
 import { explorerNodeManager } from './explorerNodeManager';
+import { TREEVIEW_ID } from '../config';
 
 export class TreeViewProvider implements TreeDataProvider<TreeNode> {
   // 自动弹出的可以暂不理会
   // public onDidChangeTreeData?:
   //   | Event<TreeNode | null | undefined>
   //   | undefined;
-  private onDidChangeTreeDataEvent: EventEmitter<TreeItem | undefined | null> = new EventEmitter<TreeItem | undefined | null>();
+  // private onDidChangeTreeDataEvent: EventEmitter<TreeItem | undefined | null> = new EventEmitter<TreeItem | undefined | null>();
+
+  private _onDidChangeTreeData: EventEmitter<TreeItem | undefined | null | void> = new EventEmitter<TreeItem | undefined | null | void>();
 
   fire(): void {
-    this.onDidChangeTreeDataEvent.fire();
+    this._onDidChangeTreeData.fire();
   }
   // 自动弹出
   // 获取树视图中的每一项 item,所以要返回 element
@@ -42,8 +46,14 @@ export class TreeViewProvider implements TreeDataProvider<TreeNode> {
     if (!element) {
       return explorerNodeManager.getChildren();
     }
-    // return await explorerNodeManager.getChapter(element);
-    return [];
+    return await explorerNodeManager.getChapter(element);
+  }
+  public initTreeView(){
+    // 实例化 TreeViewProvider
+    const treeViewProvider = new TreeViewProvider();
+    // registerTreeDataProvider：注册树视图
+    // 你可以类比 registerCommand(上面注册 Hello World)
+    window.registerTreeDataProvider(TREEVIEW_ID, treeViewProvider);
   }
 }
 

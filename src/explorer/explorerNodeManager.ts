@@ -22,9 +22,9 @@ class ExplorerNodeManager implements Disposable {
   }
 
   // // 获取
-  // public getChapter(treeNode: TreeNode): Promise<TreeNode[]> {
-  //   return readerDriver.getChapter(treeNode);
-  // }
+  public getChapter(treeNode: TreeNode): Promise<TreeNode[]> {
+    return readerDriver.getChapter(treeNode);
+  }
   public dispose(): void {
     this.treeNode = [];
   }
