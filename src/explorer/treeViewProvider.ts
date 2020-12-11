@@ -3,7 +3,8 @@ import {
   TreeItem,
   TreeItemCollapsibleState,
   ProviderResult,
-  window
+  window,
+  EventEmitter
 } from "vscode";
 import { TreeNode } from "./TreeNode";
 import { TREEVIEW_ID } from '../config';
@@ -11,10 +12,11 @@ import { explorerNodeManager } from './explorerNodeManager';
 
 export class TreeViewProvider implements TreeDataProvider<TreeNode> {
   // private onDidChangeTreeDataEvent: EventEmitter<TreeItem | undefined | null> = new EventEmitter<TreeItem | undefined | null>();
+  private _onDidChangeTreeData: EventEmitter<TreeItem | undefined | null | void> = new EventEmitter<TreeItem | undefined | null | void>();
 
-  // fire(): void {
-  //   this.onDidChangeTreeDataEvent.fire();
-  // }
+  fire(): void {
+    this._onDidChangeTreeData.fire();
+  }
   // 自动弹出
   // 获取树视图中的每一项 item,所以要返回 element
   getTreeItem(element: TreeNode): TreeItem | Thenable<TreeItem> {

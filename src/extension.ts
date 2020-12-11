@@ -5,6 +5,7 @@ import { treeViewProvider } from './explorer/treeViewProvider';
 import { createWebView, ChapterView } from './webview/ChapterView';
 import { Commands } from './config';
 import { TreeNode } from './explorer/TreeNode';
+import { updateTreeView } from './commands';
 
 let webView: ChapterView | undefined;
 // this method is called when your extension is activated
@@ -25,8 +26,8 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('e-test.helloWorld', () => {
 			vscode.window.showInformationMessage('Hello World from e-test!');
 		}),
+		vscode.commands.registerCommand(Commands.updateTreeNode, updateTreeView),
 		vscode.commands.registerCommand(Commands.openReaderWebView, (treeNode: TreeNode) => {
-			console.log(treeNode.name)
 			if (!webView) {
 				webView = createWebView(context, vscode.ViewColumn.Active, treeNode);
 				context.subscriptions.push(webView.webviewPanel);

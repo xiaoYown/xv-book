@@ -2,17 +2,22 @@ import { Disposable } from 'vscode';
 import { TreeNode } from './TreeNode';
 // import { readerDriver } from '../reader';
 
-const nodeList = Array.from(new Array(10).keys());
+function createTreeNode () {
+  const num = Math.floor(Math.random() * 10) + 1;
+  const nodeList = Array.from(new Array(num).keys());
+  
+  const result = nodeList.map((item: number):TreeNode => new TreeNode({
+    type: '.txt',
+    name: 'name-' + item,
+    isDirectory: true,
+    path: '/' + item
+  }));
+  return result;
+}
 
-const defaultNode = nodeList.map((item: number):TreeNode => new TreeNode({
-  type: '.txt',
-  name: 'name-' + item,
-  isDirectory: true,
-  path: '/' + item
-}))
 
 class ExplorerNodeManager implements Disposable {
-  public treeNode: TreeNode[] = defaultNode;
+  public treeNode: TreeNode[] = createTreeNode();
 
   public getChildren(): TreeNode[] {
     return this.treeNode;
@@ -25,6 +30,10 @@ class ExplorerNodeManager implements Disposable {
   //     });
   //   });
   // }
+
+  public createRandomNode() {
+    this.setTreeNode(createTreeNode());
+  }
 
   public setTreeNode(treeNode: TreeNode[]) {
     this.treeNode = treeNode;
